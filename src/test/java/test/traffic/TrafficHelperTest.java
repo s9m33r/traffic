@@ -7,13 +7,10 @@ import com.hokageinc.traffic.Lengaburu;
 import com.hokageinc.traffic.Route;
 import com.hokageinc.traffic.TrafficHelper;
 import com.hokageinc.traffic.TravelSuggestion;
-import models.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import traffic.*;
+import org.junit.Test;
 
-@DisplayName("TrafficHelper Tests")
+import static org.junit.Assert.assertEquals;
+
 public class TrafficHelperTest {
 
     @Test
@@ -34,8 +31,8 @@ public class TrafficHelperTest {
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
         // then
-        Assertions.assertEquals(world.getOrbit(1), travelSuggestion.getOrbits().get(0));
-        Assertions.assertEquals(world.getVehicle(2), travelSuggestion.getVehicle());
+        assertEquals(world.getOrbit(1), travelSuggestion.getOrbits().get(0));
+        assertEquals(world.getVehicle(2), travelSuggestion.getVehicle());
     }
 
     @Test
@@ -56,8 +53,8 @@ public class TrafficHelperTest {
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
         // then
-        Assertions.assertEquals(world.getOrbit(2), travelSuggestion.getOrbits().get(0));
-        Assertions.assertEquals(world.getVehicle(3), travelSuggestion.getVehicle());
+        assertEquals(world.getOrbit(2), travelSuggestion.getOrbits().get(0));
+        assertEquals(world.getVehicle(3), travelSuggestion.getVehicle());
     }
 
     @Test
@@ -81,9 +78,9 @@ public class TrafficHelperTest {
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
         // then
-        Assertions.assertEquals(2, travelSuggestion.getOrbits().size());
-        Assertions.assertEquals(world.getOrbit(3), travelSuggestion.getOrbits().get(0));
-        Assertions.assertEquals(world.getOrbit(4), travelSuggestion.getOrbits().get(1));
-        Assertions.assertEquals(world.getVehicle(3), travelSuggestion.getVehicle());
+        assertEquals(2, travelSuggestion.getOrbits().size());
+        assertEquals(world.getOrbit(3), travelSuggestion.getOrbits().get(0));
+        assertEquals(world.getOrbit(4), travelSuggestion.getOrbits().get(1));
+        assertEquals(world.getVehicle(3), travelSuggestion.getVehicle());
     }
 }

@@ -1,13 +1,14 @@
 package test.model;
 
 import com.hokageinc.models.Orbit;
+import com.hokageinc.models.Places;
 import com.hokageinc.models.Vehicle;
 import com.hokageinc.models.Weather;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import com.hokageinc.models.Places;
+import org.junit.Test;
 
 import java.text.DecimalFormat;
+
+import static org.junit.Assert.assertEquals;
 
 public class OrbitTest {
     private final DecimalFormat decimalFormat = new DecimalFormat("##.00");
@@ -24,7 +25,7 @@ public class OrbitTest {
         orbit.updateNumberOfCratersForWeather(weather);
 
         // then
-        Assertions.assertEquals(3, orbit.getWeatherBasedNumberOfCraters());
+        assertEquals(3, orbit.getWeatherBasedNumberOfCraters(), 0.1);
     }
 
     @Test
@@ -39,7 +40,7 @@ public class OrbitTest {
         float timeTaken = orbit.timeTakenWith(vehicle);
 
         // then
-        Assertions.assertEquals("6.13", decimalFormat.format(timeTaken));
+        assertEquals("6.13", decimalFormat.format(timeTaken));
     }
 
     @Test
@@ -56,6 +57,6 @@ public class OrbitTest {
         float timeTaken = orbit.timeTakenWith(vehicle);
 
         // then
-        Assertions.assertEquals("6.20", decimalFormat.format(timeTaken));
+        assertEquals("6.20", decimalFormat.format(timeTaken));
     }
 }
