@@ -1,7 +1,5 @@
 package com.hokageinc.models;
 
-import java.util.Arrays;
-
 public class Orbit {
     private int id;
     private String name;
@@ -9,15 +7,17 @@ public class Orbit {
     private float trafficSpeed;
     private float numberOfCraters;
     private float weatherBasedNumberOfCraters;
-    private Places[] connects;
+    private Place start;
+    private Place end;
 
-    public Orbit(int id, String name, float length, float numberOfCraters, Places[] connects) {
+    public Orbit(int id, String name, float length, float numberOfCraters, Place start, Place end) {
         this.id = id;
         this.name = name;
         this.length = length;
         this.numberOfCraters = numberOfCraters;
         this.weatherBasedNumberOfCraters = numberOfCraters;
-        this.connects = connects;
+        this.start = start;
+        this.end = end;
     }
 
     public int getId() {
@@ -53,8 +53,20 @@ public class Orbit {
                                 (numberOfCraters * weather.getCraterReductionFactor() / 100.0f);
     }
 
-    public Places[] getConnectedPlaces(){
-        return connects;
+    public Place getStart() {
+        return start;
+    }
+
+    public void setStart(Place start) {
+        this.start = start;
+    }
+
+    public Place getEnd() {
+        return end;
+    }
+
+    public void setEnd(Place end) {
+        this.end = end;
     }
 
     public float timeTakenWith(Vehicle vehicle) {
@@ -64,9 +76,7 @@ public class Orbit {
         float timeTakenToCrossCraters = weatherBasedNumberOfCraters *
                                       vehicle.getTimeRequiredToCrossACrater();
 
-        float timeTaken = travelTime + timeTakenToCrossCraters;
-
-        return timeTaken;
+        return travelTime + timeTakenToCrossCraters;
     }
 
     @Override
@@ -78,7 +88,8 @@ public class Orbit {
                 ", trafficSpeed=" + trafficSpeed +
                 ", numberOfCraters=" + numberOfCraters +
                 ", weatherBasedNumberOfCraters=" + weatherBasedNumberOfCraters +
-                ", connects=" + Arrays.toString(connects) +
+                ", start='" + start + '\'' +
+                ", end='" + end + '\'' +
                 '}';
     }
 }

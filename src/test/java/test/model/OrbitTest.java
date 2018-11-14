@@ -1,7 +1,7 @@
 package test.model;
 
 import com.hokageinc.models.Orbit;
-import com.hokageinc.models.Places;
+import com.hokageinc.models.Place;
 import com.hokageinc.models.Vehicle;
 import com.hokageinc.models.Weather;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class OrbitTest {
     @Test
     public void given_a_weather_determineTheUpdateInNumberOfCraters(){
         Orbit orbit = new Orbit(1, "Test Orbit", 100, 6,
-                new Places[]{Places.SILK_DORB, Places.HALLITHARAM});
+                new Place(1, "SILK_DORB"), new Place(2, "HALLITHARAM"));
 
         // given
         Weather weather = new Weather("Test Weather", 50);
@@ -32,7 +32,7 @@ public class OrbitTest {
     public void given_a_vehicle_determineTimeTakenToTravelAcross(){
         // given
         Orbit orbit = new Orbit(1, "Test Orbit", 30, 4,
-                new Places[]{Places.SILK_DORB, Places.HALLITHARAM});
+                new Place(1, "SILK_DORB"), new Place(2, "HALLITHARAM"));
         orbit.setTrafficSpeed(5);
         Vehicle vehicle = new Vehicle(1, "Test Vehicle", 10, 2);
 
@@ -49,7 +49,7 @@ public class OrbitTest {
         Vehicle vehicle = new Vehicle(1, "Test Vehicle", 10, 2);
 
         Orbit orbit = new Orbit(1, "Test Orbit", 30, 5,
-                new Places[]{Places.SILK_DORB, Places.HALLITHARAM});
+                new Place(1, "SILK_DORB"), new Place(2, "HALLITHARAM"));
         orbit.setTrafficSpeed(5);
         orbit.updateNumberOfCratersForWeather(new Weather("Test Weather", -20));
 

@@ -1,26 +1,27 @@
 package com.hokageinc.traffic;
 
-import com.hokageinc.models.Orbit;
-import com.hokageinc.models.Vehicle;
 import com.hokageinc.models.World;
-import com.hokageinc.models.Places;
 
 public class Lengaburu extends World {
 
     public Lengaburu(){
         super();
 
-        addOrbit(new Orbit(1, "Orbit 1", 18, 20,
-                new Places[]{Places.SILK_DORB, Places.HALLITHARAM}));
-        addOrbit(new Orbit(2, "Orbit 2", 20, 10,
-                new Places[]{Places.SILK_DORB, Places.HALLITHARAM}));
-        addOrbit(new Orbit(3, "Orbit 3", 30, 15,
-                new Places[]{Places.SILK_DORB, Places.R_K_PURAM}));
-        addOrbit(new Orbit(4, "Orbit 4", 15, 18,
-                new Places[]{Places.R_K_PURAM, Places.HALLITHARAM}));
+        addPlace("SILK_DORB");
+        addPlace("HALLITHARAM");
+        addPlace("R_K_PURAM");
 
-        addVehicle(new Vehicle(1, "Bike", 10, 2));
-        addVehicle(new Vehicle(2, "TUK TUK", 12, 1));
-        addVehicle(new Vehicle(3, "Car", 20, 3));
+        addOrbit("Orbit 1", 18, 20,
+                "SILK_DORB", "HALLITHARAM");
+        addOrbit("Orbit 2", 20, 10,
+                "SILK_DORB", "HALLITHARAM");
+        addOrbit("Orbit 3", 30, 15,
+                "SILK_DORB", "R_K_PURAM");
+        addOrbit("Orbit 4", 15, 18,
+                "R_K_PURAM", "HALLITHARAM");
+
+        addVehicle("Bike", 10, 2);
+        addVehicle("TUK TUK", 12, 1);
+        addVehicle("Car", 20, 3);
     }
 }

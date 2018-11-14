@@ -1,31 +1,29 @@
 package com.hokageinc.traffic;
 
-import com.hokageinc.models.Places;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Route {
-    private Places beginning;
-    private List<Places> toVisit = new ArrayList<>();
+    private String beginning;
+    private List<String> checkpoints = new ArrayList<>();
 
-    public Route(Places beginning){
+    public Route(String beginning) {
         this.beginning = beginning;
     }
 
-    public void setBeginning(Places beginning) {
-        this.beginning = beginning;
-    }
-
-    public Places getBeginning() {
+    public String getBeginning() {
         return beginning;
     }
 
-    public void addToVisit(Places place){
-        toVisit.add(place);
+    public void setBeginning(String beginning) {
+        this.beginning = beginning;
     }
 
-    public List<Places> getPlacesToVisit(){
-        return toVisit;
+    public void addToVisit(String place) {
+        checkpoints.add(place);
+    }
+
+    public List<String> getPlacesToVisit() {
+        return checkpoints;
     }
 }
