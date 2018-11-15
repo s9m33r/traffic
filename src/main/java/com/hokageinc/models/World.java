@@ -3,17 +3,18 @@ package com.hokageinc.models;
 import java.util.*;
 
 public class World {
-    private Map<Integer, Place> places = new HashMap<>();
     private Weather weather;
+    private Map<Integer, Place> places = new HashMap<>();
     private Map<Integer, Orbit> orbits = new HashMap<>();
-    private Map<Integer, Vehicle> vehiclesAvailable = new HashMap<>();
+    private Map<Integer, Vehicle> vehicles = new HashMap<>();
+    private Orbit[][] map;
 
-    public List<Place> getPlaces() {
-        return new ArrayList<>(places.values());
+    public World(int maximumNumberOfPlaces) {
+        map = new Orbit[maximumNumberOfPlaces][maximumNumberOfPlaces];
     }
 
-    public void addPlace(String nameOfThePlace) {
-        places.put(places.size(), new Place(places.size(), nameOfThePlace));
+    public Weather getWeather() {
+        return weather;
     }
 
     public void setWeather(Weather weather) {
@@ -21,8 +22,20 @@ public class World {
         orbits.values().forEach(orbit -> orbit.updateNumberOfCratersForWeather(weather));
     }
 
-    public Weather getWeather() {
-        return weather;
+    public Place getPlace(String nameOfThePlace) {
+        return Optional.of(places.values().stream().
+                filter(place -> place.getName().equalsIgnoreCase(nameOfThePlace)).
+                findFirst()).
+                get().
+                orElseThrow(PlaceByTheNameDoseNotExistsInTheWorld::new);
+    }
+
+    public List<Place> getPlaces() {
+        return new ArrayList<>(places.values());
+    }
+
+    public void addPlace(String nameOfThePlace) {
+        places.put(places.size(), new Place(places.size(), nameOfThePlace));
     }
 
     public Orbit getOrbit(int orbitId) {
@@ -45,22 +58,29 @@ public class World {
                 get().
                 orElseThrow(PlaceByTheNameDoseNotExistsInTheWorld::new);
 
-        orbits.put(orbits.size(),
-                new Orbit(orbits.size(), nameOfTheOrbit, length, numberOfCraters,
-                        startingPlace, endingPlace));
+        Orbit orbit = new Orbit(orbits.size(), nameOfTheOrbit, length, numberOfCraters,
+                startingPlace, endingPlace);
+        orbits.put(orbits.size(), orbit);
+
+        map[startingPlace.getId()][endingPlace.getId()] = orbit;
+        map[endingPlace.getId()][startingPlace.getId()] = orbit;
     }
 
     public Vehicle getVehicle(int vehicleId) {
-        return vehiclesAvailable.get(vehicleId);
+        return vehicles.get(vehicleId);
     }
 
     public List<Vehicle> getVehicles() {
-        return new ArrayList<>(vehiclesAvailable.values());
+        return new ArrayList<>(vehicles.values());
     }
 
     protected void addVehicle(String name, float topSpeed, float timeRequiredToCrossACrater) {
-        vehiclesAvailable.put(vehiclesAvailable.size(),
-                new Vehicle(vehiclesAvailable.size(), name, topSpeed, timeRequiredToCrossACrater));
+        vehicles.put(vehicles.size(),
+                new Vehicle(vehicles.size(), name, topSpeed, timeRequiredToCrossACrater));
+    }
+
+    public Orbit[][] getMap() {
+        return map;
     }
 
     public void setLiveOrbitSpeed(int orbitId, int liveSpeed) {

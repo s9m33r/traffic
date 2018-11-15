@@ -5,7 +5,7 @@ import com.hokageinc.models.World;
 public class Lengaburu extends World {
 
     public Lengaburu(){
-        super();
+        super(3);
 
         addPlace("SILK_DORB");
         addPlace("HALLITHARAM");

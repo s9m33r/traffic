@@ -1,5 +1,7 @@
 package com.hokageinc.models;
 
+import java.util.Objects;
+
 public class Place {
     private int id;
     private String name;
@@ -35,5 +37,18 @@ public class Place {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Place place = (Place) o;
+        return id == place.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

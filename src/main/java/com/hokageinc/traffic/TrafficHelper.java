@@ -1,9 +1,11 @@
 package com.hokageinc.traffic;
 
 import com.hokageinc.models.Orbit;
+import com.hokageinc.models.Place;
 import com.hokageinc.models.Vehicle;
 import com.hokageinc.models.World;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,37 +13,46 @@ import java.util.stream.Collectors;
 
 public class TrafficHelper {
     public TravelSuggestion getFastestTravelSuggestion(World world, Route route) throws NoOptimalRouteFound {
-        List<Orbit> orbitsToBeginWith = world.getOrbits().stream().
-                filter(orbit ->
-                        orbit.getStart().getName().equals(route.getBeginning()) ||
-                                orbit.getEnd().getName().equals(route.getBeginning())).
-                collect(Collectors.toList());
-
-        Map<String, Boolean> placesToVisit = route.getPlacesToVisit().stream().
-                collect(Collectors.toMap(x -> x, x -> false));
+        TravelSuggestion finalTravelSuggestion = new TravelSuggestion();
+        finalTravelSuggestion.addToTotalTimeTaken(Float.MAX_VALUE);
 
         List<Vehicle> vehicles = world.getVehicles();
+        Orbit[][] map = world.getMap();
 
-        MinimumTimeTracker minimumTimeTracker = new MinimumTimeTracker(Float.MAX_VALUE);
-
-        float timeTaken;
         for (Vehicle vehicle : vehicles) {
-            for (Orbit orbit : orbitsToBeginWith) {
-                if (placesToVisit.containsKey(orbit.getEnd().getName())) {
-                    timeTaken = orbit.timeTakenWith(vehicle);
-                    minimumTimeTracker.setIfMinimum(timeTaken, vehicle, orbit);
+            Map<Integer, Place> placesToVisit = route.getCheckpoints().stream().
+                    collect(Collectors.toMap(x -> x.getId(), x -> x));
+
+            Place currentPlace = route.getBeginning();
+
+            TravelSuggestion travelSuggestion = new TravelSuggestion();
+            travelSuggestion.setVehicle(vehicle);
+
+            while (!placesToVisit.isEmpty()) {
+                MinimumTimeTracker minimumTimeTracker = new MinimumTimeTracker(Float.MAX_VALUE);
+                Arrays.stream(map[currentPlace.getId()]).filter(orbit -> Objects.nonNull(orbit) &&
+                        placesToVisit.containsKey(orbit.getEnd().getId())).forEach(
+                        orbit ->
+                                minimumTimeTracker.setIfMinimum(orbit.timeTakenWith(vehicle), vehicle, orbit));
+
+                if (Objects.isNull(minimumTimeTracker.optimalOrbit) || Objects.isNull(minimumTimeTracker.optimalVehicle))
+                    throw new NoOptimalRouteFound();
+                else {
+                    travelSuggestion.addOrbit(minimumTimeTracker.optimalOrbit);
+                    travelSuggestion.addToTotalTimeTaken(minimumTimeTracker.currentMinimum);
+                    currentPlace = minimumTimeTracker.optimalOrbit.getEnd();
+                    placesToVisit.remove(currentPlace.getId());
                 }
+            }
+
+            if (travelSuggestion.getTotalTimeTaken() < finalTravelSuggestion.getTotalTimeTaken()) {
+                finalTravelSuggestion.setTotalTimeTaken(travelSuggestion.getTotalTimeTaken());
+                finalTravelSuggestion.setVehicle(travelSuggestion.getVehicle());
+                finalTravelSuggestion.setOrbits(travelSuggestion.getOrbits());
             }
         }
 
-        if (Objects.isNull(minimumTimeTracker.optimalOrbit) ||
-                Objects.isNull(minimumTimeTracker.optimalVehicle))
-            throw new NoOptimalRouteFound();
-
-        TravelSuggestion travelSuggestion = new TravelSuggestion(minimumTimeTracker.optimalVehicle);
-        travelSuggestion.addOrbit(minimumTimeTracker.optimalOrbit);
-
-        return travelSuggestion;
+        return finalTravelSuggestion;
     }
 
     private class MinimumTimeTracker {
@@ -53,7 +64,7 @@ public class TrafficHelper {
             this.currentMinimum = currentMinimum;
         }
 
-        void setIfMinimum(float testValue, Vehicle vehicle, Orbit orbit) {
+        private void setIfMinimum(float testValue, Vehicle vehicle, Orbit orbit) {
             if (isMinimum(testValue, vehicle)) {
                 currentMinimum = testValue;
                 optimalOrbit = orbit;

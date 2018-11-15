@@ -25,8 +25,8 @@ public class TrafficHelperTest {
         // when
         TrafficHelper trafficHelper = new TrafficHelper();
 
-        Route route = new Route("SILK_DORB");
-        route.addToVisit("HALLITHARAM");
+        Route route = new Route(world.getPlace("SILK_DORB"));
+        route.addCheckpoint(world.getPlace("HALLITHARAM"));
 
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
@@ -48,8 +48,8 @@ public class TrafficHelperTest {
         // when
         TrafficHelper trafficHelper = new TrafficHelper();
 
-        Route route = new Route("SILK_DORB");
-        route.addToVisit("HALLITHARAM");
+        Route route = new Route(world.getPlace("SILK_DORB"));
+        route.addCheckpoint(world.getPlace("HALLITHARAM"));
 
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
@@ -59,7 +59,7 @@ public class TrafficHelperTest {
     }
 
     @Test
-    public void given_two_destinations_shouldFindOptimalPath(){
+    public void given_two_destinations_shouldFindOptimalPath_Without_Order_Preference() {
         // given
         World world = new Lengaburu();
 
@@ -73,9 +73,9 @@ public class TrafficHelperTest {
         // when
         TrafficHelper trafficHelper = new TrafficHelper();
 
-        Route route = new Route("SILK_DORB");
-        route.addToVisit("HALLITHARAM");
-        route.addToVisit("RK_PURAM");
+        Route route = new Route(world.getPlace("SILK_DORB"), false);
+        route.addCheckpoint(world.getPlace("HALLITHARAM"));
+        route.addCheckpoint(world.getPlace("R_K_PURAM"));
 
         TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
 
