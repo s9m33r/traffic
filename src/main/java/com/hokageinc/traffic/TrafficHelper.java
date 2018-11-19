@@ -5,77 +5,88 @@ import com.hokageinc.models.Place;
 import com.hokageinc.models.Vehicle;
 import com.hokageinc.models.World;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TrafficHelper {
     public TravelSuggestion getFastestTravelSuggestion(World world, Route route) throws NoOptimalRouteFound {
-        TravelSuggestion finalTravelSuggestion = new TravelSuggestion();
-        finalTravelSuggestion.addToTotalTimeTaken(Float.MAX_VALUE);
+        Set<Orbit> infeasibleOrbits = new HashSet<>();
 
-        List<Vehicle> vehicles = world.getVehicles();
-        Orbit[][] map = world.getMap();
+        TravelSuggestion finalTravelSuggestion = new TravelSuggestion();
+
+        Set<Vehicle> vehicles = world.getPreferredVehicles();
 
         for (Vehicle vehicle : vehicles) {
-            Map<Integer, Place> placesToVisit = route.getCheckpoints().stream().
-                    collect(Collectors.toMap(x -> x.getId(), x -> x));
+            TravelSuggestion travelSuggestion = getTravelSuggestion(route, vehicle, world, infeasibleOrbits);
 
-            Place currentPlace = route.getBeginning();
-
-            TravelSuggestion travelSuggestion = new TravelSuggestion();
-            travelSuggestion.setVehicle(vehicle);
-
-            while (!placesToVisit.isEmpty()) {
-                MinimumTimeTracker minimumTimeTracker = new MinimumTimeTracker(Float.MAX_VALUE);
-                Arrays.stream(map[currentPlace.getId()]).filter(orbit -> Objects.nonNull(orbit) &&
-                        placesToVisit.containsKey(orbit.getEnd().getId())).forEach(
-                        orbit ->
-                                minimumTimeTracker.setIfMinimum(orbit.timeTakenWith(vehicle), vehicle, orbit));
-
-                if (Objects.isNull(minimumTimeTracker.optimalOrbit) || Objects.isNull(minimumTimeTracker.optimalVehicle))
-                    throw new NoOptimalRouteFound();
-                else {
-                    travelSuggestion.addOrbit(minimumTimeTracker.optimalOrbit);
-                    travelSuggestion.addToTotalTimeTaken(minimumTimeTracker.currentMinimum);
-                    currentPlace = minimumTimeTracker.optimalOrbit.getEnd();
-                    placesToVisit.remove(currentPlace.getId());
-                }
-            }
-
-            if (travelSuggestion.getTotalTimeTaken() < finalTravelSuggestion.getTotalTimeTaken()) {
+            if (finalTravelSuggestion.getTotalTimeTaken() == 0 ||
+                    travelSuggestion.getTotalTimeTaken() < finalTravelSuggestion.getTotalTimeTaken()
+            ) {
                 finalTravelSuggestion.setTotalTimeTaken(travelSuggestion.getTotalTimeTaken());
                 finalTravelSuggestion.setVehicle(travelSuggestion.getVehicle());
                 finalTravelSuggestion.setOrbits(travelSuggestion.getOrbits());
             }
         }
 
+        if (Objects.isNull(finalTravelSuggestion.getVehicle()) || Objects.isNull(finalTravelSuggestion.getOrbits())
+                || finalTravelSuggestion.getOrbits().size() == 0)
+            throw new NoOptimalRouteFound();
+
         return finalTravelSuggestion;
     }
 
-    private class MinimumTimeTracker {
-        float currentMinimum;
-        Vehicle optimalVehicle;
-        Orbit optimalOrbit;
+    private TravelSuggestion getTravelSuggestion(Route route, Vehicle vehicle, World world, Set<Orbit> infeasibleOrbits) {
+        TravelSuggestion travelSuggestion = new TravelSuggestion();
+        travelSuggestion.setVehicle(vehicle);
 
-        MinimumTimeTracker(float currentMinimum) {
-            this.currentMinimum = currentMinimum;
-        }
+        Map<Integer, Place> placesToVisit = route.getCheckpoints().stream().
+                collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        private void setIfMinimum(float testValue, Vehicle vehicle, Orbit orbit) {
-            if (isMinimum(testValue, vehicle)) {
-                currentMinimum = testValue;
-                optimalOrbit = orbit;
-                optimalVehicle = vehicle;
+        Place currentPlace = route.getBeginning();
+
+        Orbit lastAddedOrbit = null;
+        Place lastVisitedPlace = null;
+
+        while (!placesToVisit.isEmpty()) {
+            MinimumTimeTracker minimumTimeTracker = MinimumTimeTracker.create();
+
+            List<Place> reachableAndToBeVisitedPlaces = world.getPlacesReachableFrom(currentPlace).stream().
+                    filter(place ->
+                            placesToVisit.containsKey(place.getId())).
+                    collect(Collectors.toList());
+
+            if (reachableAndToBeVisitedPlaces.isEmpty()) {
+                infeasibleOrbits.add(lastAddedOrbit);
+                travelSuggestion.rollBackLastSuggestion();
+                placesToVisit.put(lastVisitedPlace.getId(), lastVisitedPlace);
+                currentPlace = lastVisitedPlace;
+                continue;
             }
-        }
 
-        private boolean isMinimum(float testValue, Vehicle vehicle) {
-            return testValue < currentMinimum ||
-                    (testValue == currentMinimum && "Bike".equals(vehicle.getName()));
+            List<Orbit> orbitsToEvaluate = new ArrayList<>();
+
+            for (Place place : reachableAndToBeVisitedPlaces) {
+                orbitsToEvaluate.addAll(world.getOrbitsConnecting(currentPlace, place));
+            }
+
+            orbitsToEvaluate.forEach(orbit ->
+                    minimumTimeTracker.setIfMinimum(orbit.timeTakenWith(vehicle), vehicle, orbit));
+
+            lastAddedOrbit = minimumTimeTracker.getOptimalOrbit();
+
+            List<Place> currentPlaceAndLastAddedPlace = world.getPlacesConnectedBy(lastAddedOrbit);
+            lastVisitedPlace = currentPlaceAndLastAddedPlace.get(0).getId() == currentPlace.getId() ?
+                    currentPlaceAndLastAddedPlace.get(1) : currentPlaceAndLastAddedPlace.get(0);
+
+            travelSuggestion.add(
+                    minimumTimeTracker.getCurrentMinimum(),
+                    minimumTimeTracker.getOptimalOrbit());
+
+            placesToVisit.remove(lastVisitedPlace.getId());
+
+            currentPlace = lastVisitedPlace;
         }
+        return travelSuggestion;
     }
 
     public class NoOptimalRouteFound extends RuntimeException {

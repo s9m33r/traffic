@@ -1,6 +1,5 @@
 package test.traffic;
 
-import com.hokageinc.models.Weather;
 import com.hokageinc.models.World;
 import com.hokageinc.traffic.Lengaburu;
 import com.hokageinc.traffic.Route;
@@ -17,7 +16,7 @@ public class TrafficHelperTest {
         // given
         World world = new Lengaburu();
 
-        world.setWeather(new Weather("Sunny", 10));
+        world.setCurrentWeather(world.getWeather("Sunny"));
 
         world.setLiveOrbitSpeed(0, 12);
         world.setLiveOrbitSpeed(1, 10);
@@ -40,7 +39,7 @@ public class TrafficHelperTest {
         // given
         World world = new Lengaburu();
 
-        world.setWeather(new Weather("Windy", 0));
+        world.setCurrentWeather(world.getWeather("Sunny"));
 
         world.setLiveOrbitSpeed(0, 14);
         world.setLiveOrbitSpeed(1, 20);
@@ -63,7 +62,7 @@ public class TrafficHelperTest {
         // given
         World world = new Lengaburu();
 
-        world.setWeather(new Weather("Windy", 0));
+        world.setCurrentWeather(world.getWeather("Sunny"));
 
         world.setLiveOrbitSpeed(0, 20);
         world.setLiveOrbitSpeed(1, 12);
@@ -81,8 +80,36 @@ public class TrafficHelperTest {
 
         // then
         assertEquals(2, travelSuggestion.getOrbits().size());
+        assertEquals(world.getVehicle(1), travelSuggestion.getVehicle());
+        assertEquals(world.getOrbit(0), travelSuggestion.getOrbits().get(0));
+        assertEquals(world.getOrbit(3), travelSuggestion.getOrbits().get(1));
+    }
+
+    @Test
+    public void when_windy_TUK_TUK_must_be_avoided() {
+        // given
+        World world = new Lengaburu();
+
+        world.setCurrentWeather(world.getWeather("Windy"));
+
+        world.setLiveOrbitSpeed(0, 5);
+        world.setLiveOrbitSpeed(1, 10);
+        world.setLiveOrbitSpeed(2, 20);
+        world.setLiveOrbitSpeed(3, 20);
+
+        // when
+        TrafficHelper trafficHelper = new TrafficHelper();
+
+        Route route = new Route(world.getPlace("SILK_DORB"), false);
+        route.addCheckpoint(world.getPlace("HALLITHARAM"));
+        route.addCheckpoint(world.getPlace("R_K_PURAM"));
+
+        TravelSuggestion travelSuggestion = trafficHelper.getFastestTravelSuggestion(world, route);
+
+        // then
+        assertEquals(2, travelSuggestion.getOrbits().size());
+        assertEquals(world.getVehicle(2), travelSuggestion.getVehicle());
         assertEquals(world.getOrbit(2), travelSuggestion.getOrbits().get(0));
         assertEquals(world.getOrbit(3), travelSuggestion.getOrbits().get(1));
-        assertEquals(world.getVehicle(2), travelSuggestion.getVehicle());
     }
 }
