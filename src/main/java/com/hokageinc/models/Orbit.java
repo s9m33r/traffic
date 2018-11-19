@@ -7,8 +7,6 @@ public class Orbit {
     private float trafficSpeed;
     private float numberOfCraters;
     private float weatherBasedNumberOfCraters;
-    private Place start;
-    private Place end;
 
     public Orbit(int id, String name, float length, float numberOfCraters, Place start, Place end) {
         this.id = id;
@@ -16,8 +14,6 @@ public class Orbit {
         this.length = length;
         this.numberOfCraters = numberOfCraters;
         this.weatherBasedNumberOfCraters = numberOfCraters;
-        this.start = start;
-        this.end = end;
     }
 
     public int getId() {
@@ -53,22 +49,6 @@ public class Orbit {
                                 (numberOfCraters * weather.getCraterReductionFactor() / 100.0f);
     }
 
-    public Place getStart() {
-        return start;
-    }
-
-    public void setStart(Place start) {
-        this.start = start;
-    }
-
-    public Place getEnd() {
-        return end;
-    }
-
-    public void setEnd(Place end) {
-        this.end = end;
-    }
-
     public float timeTakenWith(Vehicle vehicle) {
         float travelSpeed = Math.min(vehicle.getTopSpeed(), trafficSpeed);
         float travelTime = length / travelSpeed;
@@ -88,8 +68,6 @@ public class Orbit {
                 ", trafficSpeed=" + trafficSpeed +
                 ", numberOfCraters=" + numberOfCraters +
                 ", weatherBasedNumberOfCraters=" + weatherBasedNumberOfCraters +
-                ", start='" + start + '\'' +
-                ", end='" + end + '\'' +
                 '}';
     }
 }

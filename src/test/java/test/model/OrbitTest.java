@@ -19,7 +19,7 @@ public class OrbitTest {
                 new Place(1, "SILK_DORB"), new Place(2, "HALLITHARAM"));
 
         // given
-        Weather weather = new Weather("Test Weather", 50);
+        Weather weather = new Weather(0, "Test Weather", 50);
 
         // when
         orbit.updateNumberOfCratersForWeather(weather);
@@ -51,7 +51,7 @@ public class OrbitTest {
         Orbit orbit = new Orbit(1, "Test Orbit", 30, 5,
                 new Place(1, "SILK_DORB"), new Place(2, "HALLITHARAM"));
         orbit.setTrafficSpeed(5);
-        orbit.updateNumberOfCratersForWeather(new Weather("Test Weather", -20));
+        orbit.updateNumberOfCratersForWeather(new Weather(0, "Test Weather", -20));
 
         // when
         float timeTaken = orbit.timeTakenWith(vehicle);
