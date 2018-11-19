@@ -1,26 +1,33 @@
 package com.hokageinc.models;
 
 public class Weather {
+    private int id;
     private String name;
-    private int craterReductionFactor;
+    private float craterReductionFactor;
 
-    public Weather(String name, int craterReductionFactor){
+    public Weather(int id, String name, float craterReductionFactor) {
+        this.id = id;
         this.name = name;
         this.craterReductionFactor = craterReductionFactor;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getCraterReductionFactor(){
+    public float getCraterReductionFactor() {
         return craterReductionFactor;
     }
 
     @Override
     public String toString() {
         return "Weather{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", craterReductionFactor=" + craterReductionFactor +
                 '}';
     }
