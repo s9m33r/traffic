@@ -8,7 +8,20 @@ import com.hokageinc.models.World;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Hosts the logic to provide the best possible combination of vehicle and orbit to travel.
+ */
 public class TrafficHelper {
+    /**
+     * Provides travelSuggestion which gives information about the vehicle and the order in which
+     * the orbits must be taken for optimal travel to given places.
+     *
+     * @param world Defines the laws and state of an imaginary world.
+     * @param route Contains places which needs to be visited.
+     * @return TravelSuggestion about the vehicle to be used and orbits to be taken.
+     * @throws NoOptimalRouteFound in case, there are no feasible way to reach all the places
+     *                             provided in the route.
+     */
     public TravelSuggestion getFastestTravelSuggestion(World world, Route route) throws NoOptimalRouteFound {
         Set<Orbit> infeasibleOrbits = new HashSet<>();
 

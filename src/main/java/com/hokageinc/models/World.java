@@ -3,6 +3,15 @@ package com.hokageinc.models;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Hosts the state on an imaginary world.
+ * Like, weathers it has,
+ * vehicles it has,
+ * places it has,
+ * orbits it has.
+ * What's the current weather?
+ * What connects what?
+ */
 public class World {
     private static final String placesPairFormat = "%s-%s";
 
